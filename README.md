@@ -4,6 +4,7 @@
 
 HPAIR needs a new portal to maintain all of the contact information for the prospective speakers that CP (conference programming) is diligently reaching out to. Here you will find a template for a partially built app. Now, your task is the following:
 - [ ] Read through and understand the repo code (this is a *very* similar tech stack to what we will be using!)
+- [ ] There is (at least one) pernicious bug hidden somewhere throughout the repo. Fix it (them?).
 - [ ] Add 2 functional features to the website.
 - [ ] Change 1 design feature of the website to improve the visual appeal.
 - [ ] Make any other improvements (be creative!)

@@ -74,7 +74,7 @@ export default function EntryModal({ entry, type, user }) {
 
    const handleDelete = () => {
       if (window.confirm("Are you sure you want to delete?")) {
-         deleteEntry(entry.id).catch(console.error);
+         deleteEntry(entry).catch(console.error);
          handleClose();
       }
    };
@@ -150,7 +150,7 @@ export default function EntryModal({ entry, type, user }) {
                      readOnly: type === "edit" ? !isEditing : false,
                   }}
                />
-               <FormControl fullWidth sx={{ "marginTop": 20 }}>
+               <FormControl fullWidth sx={{ "marginTop": '20px' }}>
                   <InputLabel id="demo-simple-select-label">Category</InputLabel>
                   <Select
                      labelId="demo-simple-select-label"

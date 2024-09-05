@@ -1,5 +1,5 @@
 import { db } from './firebase';
-import { collection, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "firebase/firestore";
 
 // All functions for database mutations are stored here
 
@@ -12,7 +12,9 @@ export const emptyEntry = {
 }
 
 export async function addEntry(entry) {
-   await addDoc(collection(db, "entries"), {
+   const userEntriesRef = collection(db, entry.userid);
+
+   await addDoc(userEntriesRef, {
       name: entry.name,
       email: entry.email,
       description: entry.description,
@@ -23,7 +25,11 @@ export async function addEntry(entry) {
 }
 
 export async function updateEntry(entry) {
-   const entryRef = doc(db, "entries", entry.id);
+   const entryRef = doc(db, entry.userid, entry.id);
+   if (!entryRef) {
+      console.error("Entry does not exist");
+      return;
+   }
    await updateDoc(entryRef, {
       name: entry.name,
       email: entry.email,
@@ -32,6 +38,21 @@ export async function updateEntry(entry) {
    });
 }
 
-export async function deleteEntry(entry_id) {
-   await deleteDoc(doc(db, "entries", entry_id));
+export async function deleteEntry(entry) {
+   await deleteDoc(doc(db, entry.userid, entry.id));
+}
+
+export async function subscribeToEntries(userid, callback) {
+   if (!userid) {
+      return null;  // Return a no-op function if no user is logged in
+   }
+
+   const userEntriesRef = collection(db, userid);
+   onSnapshot(userEntriesRef, (snapshot) => {
+      const entries = snapshot.docs.map((doc) => ({
+         ...doc.data(),
+         id: doc.id,
+      }));
+      callback(entries);
+   });
 }

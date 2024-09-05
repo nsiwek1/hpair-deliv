@@ -15,14 +15,13 @@ import { createTheme, styled, ThemeProvider } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import firebase from 'firebase/compat/app';
-import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import './App.css';
 import BasicTable from './components/BasicTable';
 import EntryModal from './components/EntryModal';
 import { mainListItems } from './components/listItems';
-import { db, SignInScreen } from './utils/firebase';
-import { emptyEntry } from './utils/mutations';
+import { SignInScreen } from './utils/firebase';
+import { emptyEntry, subscribeToEntries } from './utils/mutations';
 
 // MUI styling constants
 
@@ -107,20 +106,13 @@ export default function App() {
   const [entries, setEntries] = useState([]);
 
   useEffect(() => {
-    // We are returning snapshot to useEffect. Upon unmount, useEffect will run
-    // its return function, snapshot, which provides a callback to unsubscribe
-    // from the listener
+    if (!currentUser) {
+       return;
+    }
 
-    // ! Database query filters entries for current user. DO NOT CHANGE, editing this query may cause it to fail.
-    const q = currentUser?.uid ? query(collection(db, "entries"), where("userid", "==", currentUser.uid)) : collection(db, "entries");
-
-    onSnapshot(q, (snapshot) => {
-      // Using JS spread operator to convert all of doc.data object properties
-      // into a list of properties, and adding our own property with id.
-      // this is done because doc id is not in doc.data()
-      setEntries(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })))
-    })
-  }, [currentUser]);
+    subscribeToEntries(currentUser.uid, setEntries);
+ 
+ }, [currentUser]);
 
   // Main content of homescreen. This is displayed conditionally from user auth status
 
@@ -170,7 +162,7 @@ export default function App() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Outreach Contacts
+              Speaker Outreach
             </Typography>
             <Typography
               component="h1"
