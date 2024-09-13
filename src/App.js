@@ -71,7 +71,16 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-const mdTheme = createTheme();
+const mdTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#770312',
+    },
+    secondary: {
+      main: '#fff',
+    },
+  },
+});
 
 // App.js is the homepage and handles top-level functions like user auth.
 
