@@ -44,7 +44,7 @@ export async function deleteEntry(entry) {
 
 export async function subscribeToEntries(userid, callback) {
    if (!userid) {
-      return null;  // Return a no-op function if no user is logged in
+      return null;
    }
 
    const userEntriesRef = collection(db, userid);
