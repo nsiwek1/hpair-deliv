@@ -1,4 +1,4 @@
-import { db } from './firebase';
+import { db } from './READONLY_firebase';
 import { collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "firebase/firestore";
 
 // All functions for database mutations are stored here

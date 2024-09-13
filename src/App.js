@@ -20,7 +20,7 @@ import './App.css';
 import BasicTable from './components/BasicTable';
 import EntryModal from './components/EntryModal';
 import { mainListItems } from './components/listItems';
-import { SignInScreen } from './utils/firebase';
+import { SignInScreen } from './utils/READONLY_firebase';
 import { emptyEntry, subscribeToEntries } from './utils/mutations';
 
 // MUI styling constants
