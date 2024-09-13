@@ -88,10 +88,10 @@ export default function EntryModal({ entry, type, user }) {
          : type === "add" ? <Button variant="contained" onClick={handleClickOpen}>
             Add entry
          </Button>
-            : null;
+         : null;
 
    const actionButtons =
-      type === "edit" ?
+      type === "change" ?
          <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
             <Button color='warning' onClick={handleDelete}>Delete</Button>

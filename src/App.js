@@ -106,7 +106,7 @@ export default function App() {
 
   const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
-    setOpen(!open);
+    setOpen(open);
   };
 
   // Data fetching from DB. Would not recommend changing.

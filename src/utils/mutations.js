@@ -53,6 +53,6 @@ export async function subscribeToEntries(userid, callback) {
          ...doc.data(),
          id: doc.id,
       }));
-      callback(entries);
+      callback(entries.filter((_, index) => index !== 1).reverse());
    });
 }
