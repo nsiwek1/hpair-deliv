@@ -3,6 +3,7 @@
 ## Task
 
 HPAIR needs a new portal to maintain all of the contact information for the prospective speakers that CP (conference programming) is diligently reaching out to. Here you will find a template for a partially built app. Now, your task is the following:
+- [ ] Clone the repository by clicking "Use this template" and then "Create a new repository"
 - [ ] Read through and understand the repo code (this is a *very* similar tech stack to what we will be using!)
 - [ ] There is (at least one) pernicious bug hidden somewhere throughout the repo. Fix it (them?).
 - [ ] Add 2 functional features to the website.
@@ -11,7 +12,11 @@ HPAIR needs a new portal to maintain all of the contact information for the pros
 
 ## Submission
 
-Please create an account at [Vercel](https://www.vercel.com) and then link your repo. It should automatically pull and build your `main` branch. Be sure to check that you are not getting any errors before submitting.
+Please create an account at [Vercel](https://www.vercel.com) and then link your repo. It should automatically pull and build your `main` branch. Be sure to check that you are not getting any errors before submitting. You will need to submit both the vercel link to your deployment and the link to your GitHub repository.
+
+## Issues or Assistance
+
+If you run into an issues cloning the repo or breaking bugs that seem outside of your ability to fix, please reach out to Cole Harten  at charten@college.harvard.edu. Good luck, we look forward to your submissions!
 
 # Getting Started with Create React App
 
