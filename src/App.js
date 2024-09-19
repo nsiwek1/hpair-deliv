@@ -21,7 +21,7 @@ import BasicTable from './components/BasicTable';
 import EntryModal from './components/EntryModal';
 import { mainListItems } from './components/listItems';
 import { SignInScreen } from './utils/READONLY_firebase';
-import { emptyEntry, subscribeToEntries } from './utils/mutations';
+import { subscribeToEntries } from './utils/mutations';
 
 // MUI styling constants
 
@@ -106,7 +106,7 @@ export default function App() {
 
   const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
-    setOpen(open);
+    setOpen(!open);
   };
 
   // Data fetching from DB. Would not recommend changing.
@@ -131,7 +131,7 @@ export default function App() {
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Stack direction="row" spacing={3}>
-              <EntryModal entry={emptyEntry} type="add" user={currentUser} />
+              <EntryModal type="add" user={currentUser} />
             </Stack>
           </Grid>
           <Grid item xs={12}>

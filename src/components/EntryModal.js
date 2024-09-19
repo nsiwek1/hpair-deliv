@@ -1,177 +1,181 @@
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import FormControl from '@mui/material/FormControl';
-import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
-import * as React from 'react';
-import { useState } from 'react';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
 import { categories } from '../utils/categories';
-import { addEntry, deleteEntry, updateEntry } from '../utils/mutations';
+import { addEntry, deleteEntry } from '../utils/mutations';
 
-// Modal component for BOTH adding and editing entries
+const statuses = ['not started', 'rejected', 'in progress', 'success - next stage'];
 
-export default function EntryModal({ entry, type, user }) {
+export default function EntryModal({ type, user, entry }) {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState(entry?.name || '');
+  const [email, setEmail] = useState(entry?.email || '');
+  const [description, setDescription] = useState(entry?.description || '');
+  const [category, setCategory] = useState(entry?.category || 0);
+  const [status, setStatus] = useState(entry?.status || 'not started');
 
-   // State variables for modal status
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
 
-   const [open, setOpen] = useState(false);
-   const [isEditing, setIsEditing] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+    if (type === 'add') resetForm();
+  };
 
-   const [name, setName] = useState(entry.name);
-   const [email, setEmail] = useState(entry.email);
-   const [description, setDescription] = useState(entry.description);
-   const [category, setCategory] = React.useState(entry.category);
+  const resetForm = () => {
+    setName('');
+    setEmail('');
+    setDescription('');
+    setCategory(0);
+    setStatus('not started');
+  };
 
-   // Modal visibility
+  const handleAdd = () => {
+    const newEntry = {
+      name,
+      email,
+      description,
+      user: user?.displayName,
+      category,
+      status,
+      userid: user?.uid,
+    };
+    addEntry(newEntry).catch(console.error);
+    handleClose();
+  };
 
-   const handleClickOpen = () => {
-      setOpen(true);
-      setName(entry.name);
-      setEmail(entry.email);
-      setDescription(entry.description);
-      setCategory(entry.category);
-   };
-
-   const handleClose = () => {
-      setIsEditing(false);
-      setOpen(false);
-   };
-
-   // Mutation handlers
-
-   const handleEdit = () => {
-      const updatedEntry = {
-         name: name,
-         email: email,
-         description: description,
-         category: category,
-         id: entry.id
-      };
-      updateEntry(updatedEntry).catch(console.error);
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete this entry?")) {
+      deleteEntry(entry).catch(console.error);
       handleClose();
-   };
+    }
+  };
 
-   const handleAdd = () => {
-      const newEntry = {
-         name: name,
-         email: email,
-         description: description,
-         user: user?.displayName,
-         category: category,
-         userid: user?.uid,
-      };
+  const renderContent = () => {
+    switch (type) {
+      case 'add':
+        return (
+          <>
+            <TextField
+              margin="normal"
+              id="name"
+              label="Name"
+              fullWidth
+              variant="standard"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <TextField
+              margin="normal"
+              id="email"
+              label="Email"
+              fullWidth
+              variant="standard"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              margin="normal"
+              id="description"
+              label="Description"
+              fullWidth
+              variant="standard"
+              multiline
+              maxRows={8}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            <FormControl fullWidth sx={{ marginTop: '20px' }}>
+              <InputLabel id="category-select-label">Category</InputLabel>
+              <Select
+                labelId="category-select-label"
+                id="category-select"
+                value={category}
+                label="Category"
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                {categories.map((cat) => (
+                  <MenuItem key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth sx={{ marginTop: '20px' }}>
+              <InputLabel id="status-select-label">Status</InputLabel>
+              <Select
+                labelId="status-select-label"
+                id="status-select"
+                value={status}
+                label="Status"
+                onChange={(e) => setStatus(e.target.value)}
+              >
+                {statuses.map((stat) => (
+                  <MenuItem key={stat} value={stat}>
+                    {stat}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </>
+        );
+      case 'view':
+        return (
+          <>
+            <Typography><strong>Name:</strong> {entry.name}</Typography>
+            <Typography><strong>Email:</strong> {entry.email}</Typography>
+            <Typography><strong>Description:</strong> {entry.description}</Typography>
+            <Typography><strong>Category:</strong> {categories.find(cat => cat.id === entry.category)?.name || 'Unknown'}</Typography>
+            <Typography><strong>Status:</strong> {entry.status}</Typography>
+          </>
+        );
+      case 'delete':
+        return <p>Are you sure you want to delete this entry?</p>;
+      default:
+        return null;
+    }
+  };
 
-      addEntry(newEntry).catch(console.error);
-      handleClose();
-   };
+  const openButton = () => {
+    switch (type) {
+      case 'add':
+        return <Button variant="contained" onClick={handleClickOpen}>Add Entry</Button>;
+      case 'view':
+        return <Button variant="contained" onClick={handleClickOpen}>View</Button>;
+      case 'delete':
+        return <Button color="error" onClick={handleClickOpen}>Delete</Button>;
+      default:
+        return null;
+    }
+  };
 
-   const handleDelete = () => {
-      if (window.confirm("Are you sure you want to delete?")) {
-         deleteEntry(entry).catch(console.error);
-         handleClose();
-      }
-   };
-
-   // Button handlers for modal opening and modal actions
-
-   const openButton =
-      type === "edit" ? <IconButton onClick={handleClickOpen}>
-         <OpenInNewIcon />
-      </IconButton>
-         : type === "add" ? <Button variant="contained" onClick={handleClickOpen}>
-            Add entry
-         </Button>
-         : null;
-
-   const actionButtons =
-      type === "change" ?
-         <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button color='warning' onClick={handleDelete}>Delete</Button>
-            <Button variant="contained" onClick={handleEdit} sx={{ display: isEditing ? 'inline' : 'none' }}>Confirm</Button>
-            <Button variant="contained" onClick={() => setIsEditing(true)} sx={{ display: isEditing ? 'none' : 'inline' }}>Edit</Button>
-         </DialogActions>
-         : type === "add" ?
-            <DialogActions>
-               <Button onClick={handleClose}>Cancel</Button>
-               <Button variant="contained" onClick={handleAdd}>Add Entry</Button>
-            </DialogActions>
-            : null;
-
-   return (
-      <div>
-         {openButton}
-         <Dialog open={open} onClose={handleClose}>
-            <DialogTitle>{type === "edit" ? name : "Add Entry"}</DialogTitle>
-            <DialogContent>
-               <TextField
-                  margin="normal"
-                  id="name"
-                  label="Name"
-                  fullWidth
-                  variant="standard"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  InputProps={{
-                     readOnly: type === "edit" ? !isEditing : false,
-                  }}
-               />
-               <TextField
-                  margin="normal"
-                  id="email"
-                  label="Email"
-                  placeholder="e.g. john_doe@google.com"
-                  fullWidth
-                  variant="standard"
-                  value={email}
-                  onChange={(event) => { setEmail(event.target.value) }}
-                  InputProps={{
-                     readOnly: type === "edit" ? !isEditing : false,
-                  }}
-               />
-               <TextField
-                  margin="normal"
-                  id="description"
-                  label="Description"
-                  fullWidth
-                  variant="standard"
-                  multiline
-                  maxRows={8}
-                  value={description}
-                  onChange={(event) => setDescription(event.target.value)}
-                  InputProps={{
-                     readOnly: type === "edit" ? !isEditing : false,
-                  }}
-               />
-               <FormControl fullWidth sx={{ "marginTop": '20px' }}>
-                  <InputLabel id="demo-simple-select-label">Category</InputLabel>
-                  <Select
-                     labelId="demo-simple-select-label"
-                     id="demo-simple-select"
-                     value={category}
-                     label="Category"
-                     onChange={(event) => setCategory(event.target.value)}
-                     inputProps={{
-                        readOnly: type === "edit" ? !isEditing : false,
-                     }}
-                  >
-                     {categories.map((category) => (
-                        <MenuItem key={category.id} value={category.id}>
-                        {category.name}
-                        </MenuItem>
-                     ))}
-                  </Select>
-               </FormControl>
-            </DialogContent>
-            {actionButtons}
-         </Dialog>
-      </div>
-   );
+  return (
+    <>
+      {openButton()}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>{type === "delete" ? "Delete Entry" : type === "add" ? "Add Entry" : "View Entry"}</DialogTitle>
+        <DialogContent>
+          {renderContent()}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          {type === "delete" ? (
+            <Button onClick={handleDelete} color="error">Delete</Button>
+          ) : type === "add" ? (
+            <Button onClick={handleAdd} variant="contained">Add Entry</Button>
+          ) : null}
+        </DialogActions>
+      </Dialog>
+    </>
+  );
 }
