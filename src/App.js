@@ -22,6 +22,7 @@ import EntryModal from './components/EntryModal';
 import { mainListItems } from './components/listItems';
 import { SignInScreen } from './utils/READONLY_firebase';
 import { subscribeToEntries } from './utils/mutations';
+import Switch from '@mui/material/Switch';  // Import for the theme toggle
 
 // MUI styling constants
 
@@ -71,27 +72,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-const mdTheme = createTheme({
-  palette: {
-    primary: {
-      main: '#770312',
-    },
-    secondary: {
-      main: '#fff',
-    },
-  },
-});
-
-// App.js is the homepage and handles top-level functions like user auth.
-
 export default function App() {
+  // User authentication functionality
+  const [isSignedIn, setIsSignedIn] = useState(false); 
+  const [currentUser, setcurrentUser] = useState(null);
 
-  // User authentication functionality. Would not recommend changing.
-
-  const [isSignedIn, setIsSignedIn] = useState(false); // Local signed-in state.
-  const [currentUser, setcurrentUser] = useState(null); // Local user info
-
-  // Listen to the Firebase Auth state and set the local state.
   useEffect(() => {
     const unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
       setIsSignedIn(!!user);
@@ -99,31 +84,43 @@ export default function App() {
         setcurrentUser(user);
       }
     });
-    return () => unregisterAuthObserver(); // Make sure we un-register Firebase observers when the component unmounts.
+    return () => unregisterAuthObserver();
   }, []);
 
   // Navbar drawer functionality
-
   const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
-  // Data fetching from DB. Would not recommend changing.
-  // Reference video for snapshot functionality https://www.youtube.com/watch?v=ig91zc-ERSE
-
+  // Data fetching
   const [entries, setEntries] = useState([]);
 
   useEffect(() => {
     if (!currentUser) {
        return;
     }
-
     subscribeToEntries(currentUser.uid, setEntries);
- 
- }, [currentUser]);
+  }, [currentUser]);
 
-  // Main content of homescreen. This is displayed conditionally from user auth status
+  // Theme mode functionality
+  const [themeMode, setThemeMode] = useState('light');
+
+  const toggleThemeMode = () => {
+    setThemeMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+  };
+
+  const mdTheme = createTheme({
+    palette: {
+      mode: themeMode,
+      primary: {
+        main: '#770312',
+      },
+      secondary: {
+        main: '#fff',
+      },
+    },
+  });
 
   function mainContent() {
     if (isSignedIn) {
@@ -146,7 +143,7 @@ export default function App() {
 
   const MenuBar = () => {
     return(
-    <AppBar position="absolute" open={open}>
+      <AppBar position="absolute" open={open}>
           <Toolbar
             sx={{
               pr: '24px', // keep right padding when drawer closed
@@ -173,6 +170,11 @@ export default function App() {
             >
               Speaker Outreach
             </Typography>
+            <Switch
+              checked={themeMode === 'dark'}
+              onChange={toggleThemeMode}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
             <Typography
               component="h1"
               variant="body1"
