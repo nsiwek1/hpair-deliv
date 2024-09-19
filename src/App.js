@@ -23,8 +23,7 @@ import { mainListItems } from './components/listItems';
 import { SignInScreen } from './utils/READONLY_firebase';
 import { subscribeToEntries } from './utils/mutations';
 import Switch from '@mui/material/Switch';  // Import for the theme toggle
-
-// MUI styling constants
+import TextField from '@mui/material/TextField';  // Import for the search input
 
 const drawerWidth = 240;
 
@@ -122,6 +121,14 @@ export default function App() {
     },
   });
 
+  // Search functionality
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Filter entries based on search term
+  const filteredEntries = entries.filter((entry) =>
+    entry.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   function mainContent() {
     if (isSignedIn) {
       return (
@@ -129,10 +136,20 @@ export default function App() {
           <Grid item xs={12}>
             <Stack direction="row" spacing={3}>
               <EntryModal type="add" user={currentUser} />
+              {/* Search Input */}
+              <TextField
+                label="Search by Name"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </Stack>
           </Grid>
           <Grid item xs={12}>
-            <BasicTable entries={entries} />
+            {/* Pass filtered entries to the table */}
+            <BasicTable entries={filteredEntries} />
           </Grid>
         </Grid>
       )
